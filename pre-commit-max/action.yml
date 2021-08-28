@@ -11,23 +11,17 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-
-    - name: Install Python
-      uses: actions/setup-python@v2
-
     - name: Install Terraform v${{ inputs.version }}
-      uses: hashicorp/setup-terraform@v1
-      with:
-        terraform_version: ${{ inputs.version }}
+      shell: bash
+      run: curl -o --remote-name https://releases.hashicorp.com/terraform/${{ inputs.version }}/terraform_${{ inputs.version }}_linux_amd64.zip
 
     - name: Install pre-commit dependencies
+      shell: bash
       run: |
+        pip install pre-commit
         curl -Lo ./terraform-docs.tar.gz https://github.com/terraform-docs/terraform-docs/releases/download/${{ inputs.terraform-docs-version }}/terraform-docs-${{ inputs.terraform-docs-version }}-$(uname)-amd64.tar.gz && tar -xzf terraform-docs.tar.gz terraform-docs && chmod +x terraform-docs && sudo mv terraform-docs /usr/bin/
         curl -L "$(curl -s https://api.github.com/repos/terraform-linters/tflint/releases/latest | grep -o -E "https://.+?_linux_amd64.zip")" > tflint.zip && unzip tflint.zip && rm tflint.zip && sudo mv tflint /usr/bin/
 
     - name: Execute pre-commit
-      uses: pre-commit/action@v2.0.3
-      with:
-        extra_args: --color=always --show-diff-on-failure --all-files
+      shell: bash
+      run: pre-commit --color=always --show-diff-on-failure --all-files
