@@ -1,0 +1,38 @@
+name: 'pre-commit-min'
+description: 'Pre-commit check against minimum supported Terraform version'
+inputs:
+  directory:
+    description: 'Directory to check with pre-commit using minimum version'
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Install Python
+      uses: actions/setup-python@v2
+
+    - name: Terraform min/max versions
+      id: minMax
+      uses: clowdhaus/terraform-min-max@v1.0.2
+      with:
+        directory: ${{ inputs.directory }}
+
+    - name: Install Terraform v${{ steps.minMax.outputs.minVersion }}
+      uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: ${{ steps.minMax.outputs.minVersion }}
+
+    - name: Install pre-commit dependencies
+      run: pip install pre-commit
+
+    - name: Execute pre-commit
+      # Run only validate pre-commit check on min version supported
+      if: ${{ inputs.directory !=  '.' }}
+      run: pre-commit run terraform_validate --color=always --show-diff-on-failure --files ${{ inputs.directory }}/*
+
+    - name: Execute pre-commit
+      # Run only validate pre-commit check on min version supported
+      if: ${{ inputs.directory ==  '.' }}
+      run: pre-commit run terraform_validate --color=always --show-diff-on-failure --files $(ls *.tf)

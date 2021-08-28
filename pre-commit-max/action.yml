@@ -1,0 +1,33 @@
+name: 'pre-commit-max'
+description: 'Pre-commit check against maximum supported Terraform version'
+inputs:
+  version:
+    description: 'Maximum version supported for use in evaluation'
+    required: true
+  terraform-docs-version:
+    description: 'Version of terraform-docs to use when evaluating checks'
+    required: true
+    default: 'v0.15.0'
+runs:
+  using: 'composite'
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Install Python
+      uses: actions/setup-python@v2
+
+    - name: Install Terraform v${{ inputs.version }}
+      uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: ${{ inputs.version }}
+
+    - name: Install pre-commit dependencies
+      run: |
+        curl -Lo ./terraform-docs.tar.gz https://github.com/terraform-docs/terraform-docs/releases/download/${{ inputs.terraform-docs-version }}/terraform-docs-${{ inputs.terraform-docs-version }}-$(uname)-amd64.tar.gz && tar -xzf terraform-docs.tar.gz terraform-docs && chmod +x terraform-docs && sudo mv terraform-docs /usr/bin/
+        curl -L "$(curl -s https://api.github.com/repos/terraform-linters/tflint/releases/latest | grep -o -E "https://.+?_linux_amd64.zip")" > tflint.zip && unzip tflint.zip && rm tflint.zip && sudo mv tflint /usr/bin/
+
+    - name: Execute pre-commit
+      uses: pre-commit/action@v2.0.3
+      with:
+        extra_args: --color=always --show-diff-on-failure --all-files
