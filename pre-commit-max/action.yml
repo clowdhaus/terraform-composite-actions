@@ -15,14 +15,14 @@ runs:
       shell: bash
       run: |
         curl -sO https://releases.hashicorp.com/terraform/${{ inputs.version }}/terraform_${{ inputs.version }}_linux_amd64.zip
-        unzip terraform_${{ inputs.version }}_linux_amd64.zip && rm terraform_${{ inputs.version }}_linux_amd64.zip && sudo mv terraform /usr/bin/
+        unzip -qq terraform_${{ inputs.version }}_linux_amd64.zip && rm terraform_${{ inputs.version }}_linux_amd64.zip 2> /dev/null && sudo mv terraform /usr/bin/
 
     - name: Install pre-commit dependencies
       shell: bash
       run: |
         pip install -q pre-commit
         curl -sLo ./terraform-docs.tar.gz https://github.com/terraform-docs/terraform-docs/releases/download/${{ inputs.terraform-docs-version }}/terraform-docs-${{ inputs.terraform-docs-version }}-$(uname)-amd64.tar.gz && tar -xzf terraform-docs.tar.gz terraform-docs && chmod +x terraform-docs && sudo mv terraform-docs /usr/bin/
-        curl -sL "$(curl -s https://api.github.com/repos/terraform-linters/tflint/releases/latest | grep -o -E "https://.+?_linux_amd64.zip")" > tflint.zip && unzip tflint.zip && rm tflint.zip && sudo mv tflint /usr/bin/
+        curl -sL "$(curl -s https://api.github.com/repos/terraform-linters/tflint/releases/latest | grep -o -E "https://.+?_linux_amd64.zip")" > tflint.zip && unzip -qq tflint.zip && rm tflint.zip 2> /dev/null && sudo mv tflint /usr/bin/
 
     - name: Execute pre-commit
       shell: bash

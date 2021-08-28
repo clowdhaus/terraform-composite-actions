@@ -14,7 +14,7 @@ runs:
       shell: bash
       run: |
         curl -sO https://releases.hashicorp.com/terraform/${{ inputs.version }}/terraform_${{ inputs.version }}_linux_amd64.zip
-        unzip terraform_${{ inputs.version }}_linux_amd64.zip && rm terraform_${{ inputs.version }}_linux_amd64.zip && sudo mv terraform /usr/bin/
+        unzip -qq terraform_${{ inputs.version }}_linux_amd64.zip && rm terraform_${{ inputs.version }}_linux_amd64.zip 2> /dev/null && sudo mv terraform /usr/bin/
 
     - name: Install pre-commit dependencies
       shell: bash
