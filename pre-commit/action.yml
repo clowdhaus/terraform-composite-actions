@@ -1,13 +1,17 @@
-name: 'pre-commit-max'
-description: 'Pre-commit check against maximum supported Terraform version'
+name: 'pre-commit'
+description: 'Execute pre-commit for Terraform codebase'
 inputs:
   version:
-    description: 'Maximum version supported for use in evaluation'
+    description: 'Terraform version supported for use in evaluation'
     required: true
   terraform-docs-version:
     description: 'Version of terraform-docs to use when evaluating checks'
-    required: true
+    required: false
     default: 'v0.15.0'
+  args:
+    description: 'Arguments to pass to pre-commit'
+    required: false
+    default: '--all-files --color always --show-diff-on-failure'
 runs:
   using: 'composite'
   steps:
@@ -26,4 +30,4 @@ runs:
 
     - name: Execute pre-commit
       shell: bash
-      run: pre-commit run --all-files --color always --show-diff-on-failure
+      run: pre-commit run ${{ inputs.args }}
