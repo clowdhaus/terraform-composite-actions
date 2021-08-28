@@ -13,7 +13,9 @@ runs:
   steps:
     - name: Install Terraform v${{ inputs.version }}
       shell: bash
-      run: curl -o --remote-name https://releases.hashicorp.com/terraform/${{ inputs.version }}/terraform_${{ inputs.version }}_linux_amd64.zip
+      run: |
+        curl -O https://releases.hashicorp.com/terraform/${{ inputs.version }}/terraform_${{ inputs.version }}_linux_amd64.zip
+        unzip terraform_${{ inputs.version }}_linux_amd64.zip && rm terraform_${{ inputs.version }}_linux_amd64.zip && sudo mv terraform /usr/bin/
 
     - name: Install pre-commit dependencies
       shell: bash
@@ -24,4 +26,4 @@ runs:
 
     - name: Execute pre-commit
       shell: bash
-      run: pre-commit --color=always --show-diff-on-failure --all-files
+      run: pre-commit run --all-files --color always --show-diff-on-failure

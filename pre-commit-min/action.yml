@@ -12,7 +12,9 @@ runs:
   steps:
     - name: Install Terraform v${{ inputs.version }}
       shell: bash
-      run: curl -o --remote-name https://releases.hashicorp.com/terraform/${{ inputs.version }}/terraform_${{ inputs.version }}_linux_amd64.zip
+      run: |
+        curl -O https://releases.hashicorp.com/terraform/${{ inputs.version }}/terraform_${{ inputs.version }}_linux_amd64.zip
+        unzip terraform_${{ inputs.version }}_linux_amd64.zip && rm terraform_${{ inputs.version }}_linux_amd64.zip && sudo mv terraform /usr/bin/
 
     - name: Install pre-commit dependencies
       shell: bash
@@ -20,12 +22,9 @@ runs:
 
     - name: Execute pre-commit
       shell: bash
-      # Run only validate pre-commit check on min version supported
-      if: ${{ inputs.directory !=  '.' }}
-      run: pre-commit run terraform_validate --color=always --show-diff-on-failure --files ${{ inputs.directory }}/*
-
-    - name: Execute pre-commit
-      shell: bash
-      # Run only validate pre-commit check on min version supported
-      if: ${{ inputs.directory ==  '.' }}
-      run: pre-commit run terraform_validate --color=always --show-diff-on-failure --files $(ls *.tf)
+      run: |
+        if [[ ${{ inputs.directory }} != '.' ]]; then
+          pre-commit run terraform_validate --color always --show-diff-on-failure --files ${{ inputs.directory }}/*
+        else
+          pre-commit run terraform_validate --color always --show-diff-on-failure --files $(ls *.tf)
+        fi
