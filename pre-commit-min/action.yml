@@ -13,12 +13,12 @@ runs:
     - name: Install Terraform v${{ inputs.version }}
       shell: bash
       run: |
-        curl -O https://releases.hashicorp.com/terraform/${{ inputs.version }}/terraform_${{ inputs.version }}_linux_amd64.zip
+        curl -sO https://releases.hashicorp.com/terraform/${{ inputs.version }}/terraform_${{ inputs.version }}_linux_amd64.zip
         unzip terraform_${{ inputs.version }}_linux_amd64.zip && rm terraform_${{ inputs.version }}_linux_amd64.zip && sudo mv terraform /usr/bin/
 
     - name: Install pre-commit dependencies
       shell: bash
-      run: pip install pre-commit
+      run: pip install -q pre-commit
 
     - name: Execute pre-commit
       shell: bash
