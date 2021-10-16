@@ -1,0 +1,16 @@
+name: directories
+description: Collects list of Terraform directories
+outputs:
+  directories:
+    description: Array of directories that contain a `versions.tf` file
+    value: ${{ steps.search.outputs.directories }}
+
+runs:
+  using: composite
+  steps:
+    - name: Get Terraform directories for evaluation
+      shell: bash
+      id: search
+      run: |
+        DIRS=$(python -c "import json; import glob; print(json.dumps([x.replace('/versions.tf', '') for x in glob.glob('./**/versions.tf', recursive=True)]))")
+        echo "::set-output name=directories::$DIRS"

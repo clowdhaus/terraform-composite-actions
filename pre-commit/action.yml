@@ -1,25 +1,26 @@
-name: 'pre-commit'
-description: 'Execute pre-commit for Terraform codebase'
+name: pre-commit
+description: Execute pre-commit for Terraform codebase
 inputs:
-  version:
-    description: 'Terraform version supported for use in evaluation'
+  terraform-version:
+    description: Terraform version supported for use in evaluation
     required: true
   terraform-docs-version:
-    description: 'Version of terraform-docs to use when evaluating checks'
+    description: Version of terraform-docs to use when evaluating checks
     required: false
-    default: 'v0.15.0'
+    default: v0.16.0
   args:
-    description: 'Arguments to pass to pre-commit'
+    description: Arguments to pass to pre-commit
     required: false
     default: '--all-files --color always --show-diff-on-failure'
+
 runs:
-  using: 'composite'
+  using: composite
   steps:
-    - name: Install Terraform v${{ inputs.version }}
+    - name: Install Terraform v${{ inputs.terraform-version }}
       shell: bash
       run: |
-        curl -sO https://releases.hashicorp.com/terraform/${{ inputs.version }}/terraform_${{ inputs.version }}_linux_amd64.zip
-        unzip -qq terraform_${{ inputs.version }}_linux_amd64.zip && rm terraform_${{ inputs.version }}_linux_amd64.zip 2> /dev/null && sudo mv terraform /usr/bin/
+        curl -sO https://releases.hashicorp.com/terraform/${{ inputs.terraform-version }}/terraform_${{ inputs.terraform-version }}_linux_amd64.zip
+        unzip -qq terraform_${{ inputs.terraform-version }}_linux_amd64.zip && rm terraform_${{ inputs.terraform-version }}_linux_amd64.zip 2> /dev/null && sudo mv terraform /usr/bin/
 
     - name: Install pre-commit dependencies
       shell: bash

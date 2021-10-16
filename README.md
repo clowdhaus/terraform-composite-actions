@@ -6,7 +6,7 @@ Contains [composite GitHub actions](https://docs.github.com/en/actions/creating-
 
 - [ ] Action for pre-commit
   - [ ] Covers min-version check which is for validation
-  - [ ] Covers max-version check which is for all pre0-commit hooks
+  - [ ] Covers max-version check which is for all pre-commit hooks
 - [ ] Action for getting directories
   - [ ] Outputs directories
 
