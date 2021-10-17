@@ -31,13 +31,13 @@ runs:
         curl -sLo ./terraform-docs.tar.gz https://github.com/terraform-docs/terraform-docs/releases/download/${{ inputs.terraform-docs-version }}/terraform-docs-${{ inputs.terraform-docs-version }}-$(uname)-amd64.tar.gz && tar -xzf terraform-docs.tar.gz terraform-docs && chmod +x terraform-docs && sudo mv terraform-docs /usr/bin/
         curl -sL "$(curl -s https://api.github.com/repos/terraform-linters/tflint/releases/latest | grep -o -E "https://.+?_linux_amd64.zip")" > tflint.zip && unzip -qq tflint.zip && rm tflint.zip 2> /dev/null && sudo mv tflint /usr/bin/
 
-    - name: Format
+    - name: Pre-commit
       shell: bash
-      run: pre-commit run terraform_fmt --color=always --show-diff-on-failure --all-files || true
+      run: pre-commit run -a --color=always --show-diff-on-failure --all-files || true
 
-    - name: Update docs
-      shell: bash
-      run: pre-commit run terraform_docs --color=always --show-diff-on-failure --all-files || true
+    # - name: Update docs
+    #   shell: bash
+    #   run: pre-commit run terraform_docs --color=always --show-diff-on-failure --all-files || true
 
     - name: Commit files
       shell: bash
