@@ -1,0 +1,49 @@
+name: format-docs
+description: Execute pre-commit to format Terraform code, update docs, and add commit if any changes
+inputs:
+  terraform-version:
+    description: Terraform version supported for use in evaluation
+    required: true
+  terraform-docs-version:
+    description: Version of terraform-docs to use when evaluating checks
+    required: false
+    default: v0.16.0
+  git-branch:
+    description: Git branch to push changes to (if any)
+    required: true
+  github-token:
+    description: GitHub personal access token with `repo` access to permit pushing changes to `git-branch`
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Install Terraform v${{ inputs.terraform-version }}
+      shell: bash
+      run: |
+        curl -sO https://releases.hashicorp.com/terraform/${{ inputs.terraform-version }}/terraform_${{ inputs.terraform-version }}_linux_amd64.zip
+        unzip -qq terraform_${{ inputs.terraform-version }}_linux_amd64.zip && rm terraform_${{ inputs.terraform-version }}_linux_amd64.zip 2> /dev/null && sudo mv terraform /usr/bin/
+
+    - name: Install pre-commit dependencies
+      shell: bash
+      run: |
+        pip install -q pre-commit
+        curl -sLo ./terraform-docs.tar.gz https://github.com/terraform-docs/terraform-docs/releases/download/${{ inputs.terraform-docs-version }}/terraform-docs-${{ inputs.terraform-docs-version }}-$(uname)-amd64.tar.gz && tar -xzf terraform-docs.tar.gz terraform-docs && chmod +x terraform-docs && sudo mv terraform-docs /usr/bin/
+        curl -sL "$(curl -s https://api.github.com/repos/terraform-linters/tflint/releases/latest | grep -o -E "https://.+?_linux_amd64.zip")" > tflint.zip && unzip -qq tflint.zip && rm tflint.zip 2> /dev/null && sudo mv tflint /usr/bin/
+
+    - name: Format
+      shell: bash
+      run: pre-commit run terraform_fmt --color=always --show-diff-on-failure --all-files || true
+
+    - name: Update docs
+      shell: bash
+      run: pre-commit run terraform_docs --color=always --show-diff-on-failure --all-files || true
+
+    - name: Commit files
+      shell: bash
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git commit -m 'chore: auto format and update docs' -a || echo 'Nothing to update'
+        remote_repo="https://${GITHUB_ACTOR}:${{ inputs.github-token }}@github.com/${GITHUB_REPOSITORY}.git"
+        git push "${remote_repo}" HEAD:${{ inputs.git-branch }} || true
