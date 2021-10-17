@@ -35,10 +35,6 @@ runs:
       shell: bash
       run: pre-commit run -a --color=always --show-diff-on-failure --all-files || true
 
-    # - name: Update docs
-    #   shell: bash
-    #   run: pre-commit run terraform_docs --color=always --show-diff-on-failure --all-files || true
-
     - name: Commit files
       shell: bash
       run: |

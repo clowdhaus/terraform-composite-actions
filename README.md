@@ -2,13 +2,11 @@
 
 Contains [composite GitHub actions](https://docs.github.com/en/actions/creating-actions/creating-a-composite-action) used within [Terraform AWS Module](https://github.com/terraform-aws-modules) projects.
 
-## TODO
+## Actions
 
-- [ ] Action for pre-commit
-  - [ ] Covers min-version check which is for validation
-  - [ ] Covers max-version check which is for all pre-commit hooks
-- [ ] Action for getting directories
-  - [ ] Outputs directories
+- [directories](./directories) - collects list of Terraform directories
+- [format-docs](./format-docs) - executes pre-commit to format Terraform code, update docs, and add commit if any changes
+- [pre-commit](./pre-commit) - execute pre-commit for Terraform codebase
 
 ## Misc
 
