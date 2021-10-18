@@ -4,11 +4,6 @@ on:
   push:
     branches:
       - main
-    paths:
-      - '.github/workflows/semantic-releaser.yml'
-      - 'directories/*'
-      - 'format-docs/*'
-      - 'pre-commit/*'
 
 jobs:
   release:
