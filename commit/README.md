@@ -17,6 +17,13 @@ A GitHub personal access token is required in order for the action to be able to
   <img src="../.github/images/pat.png " alt="Directories" height="224px">
 </p>
 
+#### :warning: Access Tokens & Pull-Requests from Forked Reposiories :warning:
+
+When using this action from a forked copy, it will only succeed if either of two conditions are met:
+
+1. The user who has forked the project must create a GitHub personal access token with the defined permissions and store it in their forked repository under the same name as the upstream secret (defined in the workflow file)
+2. The entity that presides over the source repository extends access to the secret (you should be mindful of what this means - extending secret access to forked repositories means those forks could potentially retrieve those secret values) via https://github.blog/2020-08-03-github-actions-improvements-for-fork-and-pull-request-workflows/
+
 ```yml
 jobs:
   commit:
