@@ -6,14 +6,14 @@ Contains [composite GitHub actions](https://docs.github.com/en/actions/creating-
 
 ### [Commit](./commit)
 
-The `clowdhaus/terraform-composite-actions/format-docs` action will format your Terraform codebase and update the documentation using `terraform-docs` before commiting any changes back to your `git-branch`. This action is intended to ensure that pull-requests are well formatted and the automatically generated documentation is updated.
+The `clowdhaus/terraform-composite-actions/commit` action will commit any changes back to your `git-branch`. When used in conjunction with `clowdhaus/terraform-composite-actions/pre-commit`, this action will ensure that pull-requests are well formatted and the automatically generated documentation is updated.
 
 #### GitHub Token Permissions
 
 A GitHub personal access token is required in order for the action to be able to successfully commit and push any changes back to the specified branch.
 
 <p align="center">
-  <img src=".github/images/pat.png " alt="Directories" height="196px">
+  <img src=".github/images/pat.png " alt="Directories" height="224px">
 </p>
 
 ```yml

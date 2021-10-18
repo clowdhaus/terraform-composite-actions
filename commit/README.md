@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="../.github/images/git.png " alt="Docs" height="196px">
+  <img src="../.github/images/git.png " alt="Docs" height="224px">
 </p>
 <h1 style="font-size: 56px; margin: 0; padding: 0;" align="center">
   commit
@@ -14,7 +14,7 @@ The `clowdhaus/terraform-composite-actions/commit` action will commit any change
 A GitHub personal access token is required in order for the action to be able to successfully commit and push any changes back to the specified branch.
 
 <p align="center">
-  <img src="../.github/images/pat.png " alt="Directories" height="196px">
+  <img src="../.github/images/pat.png " alt="Directories" height="224px">
 </p>
 
 ```yml
