@@ -4,24 +4,7 @@ Contains [composite GitHub actions](https://docs.github.com/en/actions/creating-
 
 ## Actions
 
-### [Directories](./directories)
-
-The `clowdhaus/terraform-composite-actions/directories` action will return a list of directories that contain a `versions.tf`, where the presence of a `versions.tf` file is loosely representative of a Terraform project root directory. This is useful for running a set of commands in each Terraform root directory under a given project.
-
-```yml
-jobs:
-  search:
-    name: Get Terraform directories
-    runs-on: ubuntu-latest
-    steps:
-      - name: Sign AWS Lambda artifact
-        uses: clowdhaus/terraform-composite-actions/directories@main
-        id: search
-      - name: Outputs
-        run: echo "${{ steps.search.outputs.directories }}"
-```
-
-### [Format-Docs](./format-docs)
+### [Commit](./commit)
 
 The `clowdhaus/terraform-composite-actions/format-docs` action will format your Terraform codebase and update the documentation using `terraform-docs` before commiting any changes back to your `git-branch`. This action is intended to ensure that pull-requests are well formatted and the automatically generated documentation is updated.
 
@@ -35,17 +18,32 @@ A GitHub personal access token is required in order for the action to be able to
 
 ```yml
 jobs:
-  pre-commit:
-    name: Format docs
+  commit:
+    name: Commit changes
     runs-on: ubuntu-latest
     steps:
-      - name: Format and update docs
-        uses: clowdhaus/terraform-composite-actions/format-docs@main
+      - name: Commit changes
+        uses: clowdhaus/terraform-composite-actions/commit@main
         with:
-          terraform-version: 1.0.2
-          terraform-docs-version: v15.0.0
           git-branch: ${{ env.GITHUB_HEAD_REF }}
           github-token: ${{ secrets.YOUR_GITHUB_PAT }}
+```
+
+### [Directories](./directories)
+
+The `clowdhaus/terraform-composite-actions/directories` action will return a list of directories that contain a `versions.tf`, where the presence of a `versions.tf` file is loosely representative of a Terraform project root directory. This is useful for running a set of commands in each Terraform root directory under a given project.
+
+```yml
+jobs:
+  directories:
+    name: Get Terraform directories
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sign AWS Lambda artifact
+        uses: clowdhaus/terraform-composite-actions/directories@main
+        id: search
+      - name: Outputs
+        run: echo "${{ steps.search.outputs.directories }}"
 ```
 
 ### [Pre-Commit](./pre-commit)
