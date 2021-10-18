@@ -4,6 +4,9 @@ inputs:
   git-branch:
     description: Git branch to push changes to (if any)
     required: true
+  github-repository:
+    description: GitHub repository where changes will be pushed
+    required: true
   github-token:
     description: GitHub personal access token with `repo` access to permit pushing changes to `git-branch`
     required: true
@@ -17,5 +20,5 @@ runs:
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         git commit -m 'chore: auto format and update docs' -a || echo 'Nothing to update'
-        remote_repo="https://${GITHUB_ACTOR}:${{ inputs.github-token }}@github.com/${GITHUB_REPOSITORY}.git"
+        remote_repo="https://${GITHUB_ACTOR}:${{ inputs.github-token }}@github.com/${{ inputs.github-repository }}.git"
         git push "${remote_repo}" HEAD:${{ inputs.git-branch }} || true

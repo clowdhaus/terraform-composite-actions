@@ -26,6 +26,7 @@ jobs:
       - name: Commit changes
         uses: clowdhaus/terraform-composite-actions/commit@main
         with:
-          git-branch: ${{ env.GITHUB_HEAD_REF }}
+          git-branch: ${{ github.event.pull_request.head.ref }}
+          github-repository: ${{github.event.pull_request.head.repo.full_name}}
           github-token: ${{ secrets.YOUR_GITHUB_PAT }}
 ```
