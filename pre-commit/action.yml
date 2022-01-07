@@ -19,15 +19,22 @@ runs:
     - name: Install Terraform v${{ inputs.terraform-version }}
       shell: bash
       run: |
-        curl -sO https://releases.hashicorp.com/terraform/${{ inputs.terraform-version }}/terraform_${{ inputs.terraform-version }}_linux_amd64.zip
-        unzip -qq terraform_${{ inputs.terraform-version }}_linux_amd64.zip && rm terraform_${{ inputs.terraform-version }}_linux_amd64.zip 2> /dev/null && sudo mv terraform /usr/bin/
+        curl -sSO https://releases.hashicorp.com/terraform/${{ inputs.terraform-version }}/terraform_${{ inputs.terraform-version }}_linux_amd64.zip
+        sudo unzip -qq terraform_${{ inputs.terraform-version }}_linux_amd64.zip terraform -d /usr/bin/
+        rm terraform_${{ inputs.terraform-version }}_linux_amd64.zip 2> /dev/null
 
     - name: Install pre-commit dependencies
       shell: bash
       run: |
         pip install -q pre-commit
-        curl -sLo ./terraform-docs.tar.gz https://github.com/terraform-docs/terraform-docs/releases/download/${{ inputs.terraform-docs-version }}/terraform-docs-${{ inputs.terraform-docs-version }}-$(uname)-amd64.tar.gz && tar -xzf terraform-docs.tar.gz terraform-docs && chmod +x terraform-docs && sudo mv terraform-docs /usr/bin/
-        curl -sL "$(curl -s https://api.github.com/repos/terraform-linters/tflint/releases/latest | grep -o -E "https://.+?_linux_amd64.zip")" > tflint.zip && unzip -qq tflint.zip && rm tflint.zip 2> /dev/null && sudo mv tflint /usr/bin/
+
+        curl -sSLo ./terraform-docs.tar.gz https://github.com/terraform-docs/terraform-docs/releases/download/${{ inputs.terraform-docs-version }}/terraform-docs-${{ inputs.terraform-docs-version }}-$(uname)-amd64.tar.gz
+        sudo tar -xzf terraform-docs.tar.gz terraform-docs -C /usr/bin/
+        rm terraform-docs.tar.gz 2> /dev/null
+
+        curl -sSL "$(curl -s https://api.github.com/repos/terraform-linters/tflint/releases/latest | grep -o -E "https://.+?_linux_amd64.zip")" > tflint.zip
+        sudo unzip -qq tflint.zip tflint -d /usr/bin/
+        rm tflint.zip 2> /dev/null
 
     - name: Execute pre-commit
       shell: bash
