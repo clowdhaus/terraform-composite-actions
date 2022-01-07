@@ -29,7 +29,7 @@ runs:
         pip install -q pre-commit
 
         curl -sSLo ./terraform-docs.tar.gz https://github.com/terraform-docs/terraform-docs/releases/download/${{ inputs.terraform-docs-version }}/terraform-docs-${{ inputs.terraform-docs-version }}-$(uname)-amd64.tar.gz
-        sudo tar -xzf terraform-docs.tar.gz terraform-docs -C /usr/bin/
+        sudo tar -xzf terraform-docs.tar.gz -C /usr/bin/ terraform-docs
         rm terraform-docs.tar.gz 2> /dev/null
 
         curl -sSL "$(curl -s https://api.github.com/repos/terraform-linters/tflint/releases/latest | grep -o -E "https://.+?_linux_amd64.zip")" > tflint.zip
