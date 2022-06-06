@@ -12,6 +12,14 @@ inputs:
     description: Arguments to pass to pre-commit
     required: false
     default: '--all-files --color always --show-diff-on-failure'
+  install-hcledit:
+    description: Install hcledit for pre-commit
+    required: false
+    default: 'false'
+  hcledit-version:
+    description: Version of hcledit to install when `install-hcledit` is true
+    required: false
+    default: 0.2.3
 
 runs:
   using: composite
@@ -35,6 +43,12 @@ runs:
         curl -sSL "$(curl -s https://api.github.com/repos/terraform-linters/tflint/releases/latest | grep -o -E "https://.+?_linux_amd64.zip")" > tflint.zip
         sudo unzip -qq tflint.zip tflint -d /usr/bin/
         rm tflint.zip 2> /dev/null
+
+        if [[ "${{ inputs.install-hcledit }}" == "true" ]]; then
+          curl -sSLo ./hcledit.tar.gz https://github.com/minamijoyo/hcledit/releases/download/v${{ inputs.hcledit-version }}/hcledit_${{ inputs.hcledit-version }}_$(uname)_amd64.tar.gz
+          sudo tar -xzf hcledit.tar.gz -C /usr/bin/ hcledit
+          rm hcledit.tar.gz 2> /dev/null
+        fi
 
     - name: Execute pre-commit
       shell: bash

@@ -13,6 +13,7 @@ The `clowdhaus/terraform-composite-actions/pre-commit` action will install the f
 - [pre-commit](https://github.com/pre-commit/pre-commit)
 - [tflint](https://github.com/terraform-linters/tflint)
 - [terraform-docs](https://github.com/terraform-docs/terraform-docs) using provided `terraform-docs-version` input
+- [hcledit](https://github.com/minamijoyo/hcledit) when `install-hcledit` is `true` (and `hcledit-version` to support)
 
 ```yml
 jobs:
@@ -23,7 +24,9 @@ jobs:
       - name: Sign AWS Lambda artifact
         uses: clowdhaus/terraform-composite-actions/pre-commit@main
         with:
-          terraform-version: 1.0.2
-          terraform-docs-version: v15.0.0
+          terraform-version: 1.2.0
+          terraform-docs-version: v16.0.0
+          install-hcledit: true
+          hcledit-version: 0.2.3
           args: "--all-files --color always --show-diff-on-failure"
 ```

@@ -72,8 +72,10 @@ jobs:
       - name: Sign AWS Lambda artifact
         uses: clowdhaus/terraform-composite-actions/pre-commit@main
         with:
-          terraform-version: 1.0.2
-          terraform-docs-version: v15.0.0
+          terraform-version: 1.2.0
+          terraform-docs-version: v16.0.0
+          install-hcledit: true
+          hcledit-version: 0.2.3
           args: "--all-files --color always --show-diff-on-failure"
 ```
 
