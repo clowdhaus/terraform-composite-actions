@@ -8,6 +8,10 @@ inputs:
     description: Version of terraform-docs to use when evaluating checks
     required: false
     default: v0.16.0
+  tflint-version:
+    description: Version of tflint to use when evaluating checks
+    required: false
+    default: latest
   args:
     description: Arguments to pass to pre-commit
     required: false
@@ -40,7 +44,11 @@ runs:
         sudo tar -xzf terraform-docs.tar.gz -C /usr/bin/ terraform-docs
         rm terraform-docs.tar.gz 2> /dev/null
 
-        curl -sSL "$(curl -s https://api.github.com/repos/terraform-linters/tflint/releases/latest | grep -o -E "https://.+?_linux_amd64.zip")" > tflint.zip
+        if [[ "${{ inputs.tflint-version }}" == "latest" ]]; then
+          curl -sSL "$(curl -s https://api.github.com/repos/terraform-linters/tflint/releases/latest | grep -o -E "https://.+?_linux_amd64.zip")" > tflint.zip
+        else
+          curl -sSLo ./tflint.zip https://github.com/terraform-linters/tflint/releases/download/${{ inputs.tflint-version }}/tflint_linux_amd64.zip
+        fi
         sudo unzip -qq tflint.zip tflint -d /usr/bin/
         rm tflint.zip 2> /dev/null
 
