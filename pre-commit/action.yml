@@ -24,6 +24,14 @@ inputs:
     description: Version of hcledit to install when `install-hcledit` is true
     required: false
     default: 0.2.3
+  install-tfsec:
+    description: Install tfsec for pre-commit
+    required: false
+    default: 'false'
+  tfsec-version:
+    description: Version of tfsec to install when `install-tfsec` is true
+    required: false
+    default: 1.28.0
 
 runs:
   using: composite
@@ -58,8 +66,11 @@ runs:
           rm hcledit.tar.gz 2> /dev/null
         fi
 
-        curl -sSL "$(curl -s https://api.github.com/repos/aquasecurity/tfsec/releases/latest | grep -o -E "https://.+?_linux_amd64.tar.gz")" > tfsec.tar.gz
-        sudo tar -xzf tfsec.tar.gz -C /usr/bin/ tfsec tfsec-checkgen
+        if [[ "${{ inputs.install-tfsec }}" == "true" ]]; then
+          curl -sSLo ./tfsec.tar.gz https://github.com/aquasecurity/tfsec/releases/download/v${{ inputs.tfsec-version }}/tfsec_${{ inputs.tfsec-version }}_$(uname)_amd64.tar.gz
+          sudo tar -xzf tfsec.tar.gz -C /usr/bin/ tfsec tfsec-checkgen
+          rm tfsec.tar.gz 2> /dev/null
+        fi
 
     - name: Execute pre-commit
       shell: bash
