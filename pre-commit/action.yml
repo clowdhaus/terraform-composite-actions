@@ -59,7 +59,7 @@ runs:
         fi
 
         curl -sSL "$(curl -s https://api.github.com/repos/aquasecurity/tfsec/releases/latest | grep -o -E "https://.+?_linux_amd64.tar.gz")" > tfsec.tar.gz
-        sudo tar -xzf tfsec.zip -C /usr/bin/ tfsec tfsec-checkgen
+        sudo tar -xzf tfsec.tar.gz -C /usr/bin/ tfsec tfsec-checkgen
 
     - name: Execute pre-commit
       shell: bash
