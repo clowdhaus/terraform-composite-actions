@@ -35,6 +35,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Default Terraform version
+        continue-on-error: true
+        run: terraform version
+
       - name: Terraform min/max versions
         id: minMax
         uses: clowdhaus/terraform-min-max@v1.0.8
@@ -57,6 +61,9 @@ jobs:
           terraform-version: ${{ steps.minMax.outputs.minVersion }}
           args: 'terraform_validate --color=always --show-diff-on-failure --files $(ls *.tf)'
 
+      - name: Selected Terraform version
+        run: terraform version
+
   preCommitMaxVersion:
     name: Max TF pre-commit
     runs-on: ubuntu-latest
@@ -67,6 +74,10 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{github.event.pull_request.head.repo.full_name}}
+
+      - name: Default Terraform version
+        continue-on-error: true
+        run: terraform version
 
       - name: Terraform min/max versions
         id: minMax
@@ -82,3 +93,6 @@ jobs:
 
       - name: check
         run: hcledit --help
+
+      - name: Selected Terraform version
+        run: terraform version
