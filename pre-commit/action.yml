@@ -39,6 +39,7 @@ runs:
     - name: Install Terraform v${{ inputs.terraform-version }}
       shell: bash
       run: |
+        rm -rf $(which terraform)
         curl -sSO https://releases.hashicorp.com/terraform/${{ inputs.terraform-version }}/terraform_${{ inputs.terraform-version }}_linux_amd64.zip
         sudo unzip -qq terraform_${{ inputs.terraform-version }}_linux_amd64.zip terraform -d /usr/bin/
         rm terraform_${{ inputs.terraform-version }}_linux_amd64.zip 2> /dev/null
