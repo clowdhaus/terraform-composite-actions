@@ -13,4 +13,4 @@ runs:
       id: search
       run: |
         DIRS=$(python -c "import json; import glob; import re; print(json.dumps([x.replace('/versions.tf', '') for x in glob.glob('./**/versions.tf', recursive=True) if not re.match(r'^.+/_', x)]))")
-        echo "::set-output name=directories::$DIRS"
+        echo "directories=$DIRS" >> $GITHUB_OUTPUT
