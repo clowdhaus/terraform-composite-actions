@@ -7,8 +7,8 @@ import glob
 
 def get_directories():
     """
-    Return all Terraform (*.tf) files that contain the `required_version`
-      string, but does not contain `wrapper` in the path.
+    Return all Terraform (*.tf) files that contain the 'required_version'
+        string, but does not contain 'wrapper' in the path.
     """
 
     terraform_files = glob.glob('./**/*.tf', recursive=True)
