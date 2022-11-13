@@ -45,7 +45,9 @@ runs:
             print(get_directories())
         EOL
 
-        echo $SCRIPT > directories.py
+        ls -la
+        cat ./directories.py
+
         DIRS=$(python ./directories.py)
         rm directories.py
         echo "directories=$DIRS" >> $GITHUB_OUTPUT
