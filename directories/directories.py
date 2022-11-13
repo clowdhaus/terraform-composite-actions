@@ -21,9 +21,10 @@ def get_directories():
             with open(file, 'rb', 0) as rfile:
                 contents = mmap.mmap(rfile.fileno(), 0, access=mmap.ACCESS_READ)
                 if contents.find(b'required_version') != -1 and 'wrapper' not in file:
-                    directories.append(file)
+                    formatted = "/".join(file.split('/')[:-1])
+                    directories.append(formatted)
 
-    return json.dumps([x.replace('/versions.tf', '') for x in directories if not re.match(r'^.+/_', x)])
+    return json.dumps([x for x in directories if not re.match(r'^.+/_', x)])
 
 
 if __name__ == '__main__':
