@@ -2,7 +2,7 @@ import json
 import mmap
 import os
 import re
-from glob import glob
+import glob
 
 
 def get_directories():
@@ -11,7 +11,7 @@ def get_directories():
       string, but does not contain `wrapper` in the path.
     """
 
-    terraform_files = glob('./**/*.tf', recursive=True)
+    terraform_files = glob.glob('./**/*.tf', recursive=True)
     directories = []
 
     for file in terraform_files:
