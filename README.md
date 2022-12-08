@@ -58,10 +58,19 @@ jobs:
 
 The `clowdhaus/terraform-composite-actions/pre-commit` action will install the following tools which are intended to support the pre-commit hooks used within Terraform modules:
 
-- [terraform](https://github.com/hashicorp/terraform) using provided `terraform-version` input
+#### Default
+
 - [pre-commit](https://github.com/pre-commit/pre-commit)
-- [tflint](https://github.com/terraform-linters/tflint)
-- [terraform-docs](https://github.com/terraform-docs/terraform-docs) using provided `terraform-docs-version` input
+- [terraform](https://github.com/hashicorp/terraform) using provided `terraform-version` input (required)
+- [tflint](https://github.com/terraform-linters/tflint) using provided `tflint-version` input (default = `latest`)
+- [terraform-docs](https://github.com/terraform-docs/terraform-docs) using provided `terraform-docs-version` input (default = `v0.16.0`)
+
+#### Optional
+
+- [tfsec](https://aquasecurity.github.io/tfsec), when `install-tfsec=true` (default = `false`), using provided `tfsec-version` input (default = `1.28.0`)
+- [hcledit](https://github.com/minamijoyo/hcledit) when `install-hcledit=true` (default = `false`), using provided `hcledit-version` input (default = `0.2.3`)
+
+#### Example
 
 ```yml
 jobs:
@@ -72,8 +81,10 @@ jobs:
       - name: Sign AWS Lambda artifact
         uses: clowdhaus/terraform-composite-actions/pre-commit@main
         with:
+          # Configure default software
           terraform-version: 1.2.0
-          terraform-docs-version: v16.0.0
+          terraform-docs-version: v0.16.0
+          # Configure optional software
           install-hcledit: true
           hcledit-version: 0.2.3
           args: "--all-files --color always --show-diff-on-failure"
