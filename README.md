@@ -83,7 +83,7 @@ jobs:
         with:
           # Configure default software
           terraform-version: 1.2.0
-          terraform-docs-version: v16.0.0
+          terraform-docs-version: v0.16.0
           # Configure optional software
           install-hcledit: true
           hcledit-version: 0.2.3
