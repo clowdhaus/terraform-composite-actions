@@ -40,7 +40,7 @@ runs:
       shell: bash
       run: |
         rm -rf $(which terraform)
-        curl -sSO https://releases.hashicorp.com/terraform/${{ inputs.terraform-version }}/terraform_${{ inputs.terraform-version }}_linux_amd64.zip
+        curl --retry 3 --retry-all-errors --retry-delay 3 -sSO https://releases.hashicorp.com/terraform/${{ inputs.terraform-version }}/terraform_${{ inputs.terraform-version }}_linux_amd64.zip
         sudo unzip -qq terraform_${{ inputs.terraform-version }}_linux_amd64.zip terraform -d /usr/bin/
         rm terraform_${{ inputs.terraform-version }}_linux_amd64.zip 2> /dev/null
 
@@ -49,26 +49,26 @@ runs:
       run: |
         pip install -q pre-commit
 
-        curl -sSLo ./terraform-docs.tar.gz https://github.com/terraform-docs/terraform-docs/releases/download/${{ inputs.terraform-docs-version }}/terraform-docs-${{ inputs.terraform-docs-version }}-$(uname)-amd64.tar.gz
+        curl --retry 3 --retry-all-errors --retry-delay 3 -sSLo ./terraform-docs.tar.gz https://github.com/terraform-docs/terraform-docs/releases/download/${{ inputs.terraform-docs-version }}/terraform-docs-${{ inputs.terraform-docs-version }}-$(uname)-amd64.tar.gz
         sudo tar -xzf terraform-docs.tar.gz -C /usr/bin/ terraform-docs
         rm terraform-docs.tar.gz 2> /dev/null
 
         if [[ "${{ inputs.tflint-version }}" == "latest" ]]; then
-          curl -sSL "$(curl -s https://api.github.com/repos/terraform-linters/tflint/releases/latest | grep -o -E "https://.+?_linux_amd64.zip")" > tflint.zip
+          curl --retry 3 --retry-all-errors --retry-delay 3 -sSL "$(curl --retry 3 --retry-all-errors --retry-delay 3 -s https://api.github.com/repos/terraform-linters/tflint/releases/latest | grep -o -E "https://.+?_linux_amd64.zip")" > tflint.zip
         else
-          curl -sSLo ./tflint.zip https://github.com/terraform-linters/tflint/releases/download/${{ inputs.tflint-version }}/tflint_linux_amd64.zip
+          curl --retry 3 --retry-all-errors --retry-delay 3 -sSLo ./tflint.zip https://github.com/terraform-linters/tflint/releases/download/${{ inputs.tflint-version }}/tflint_linux_amd64.zip
         fi
         sudo unzip -qq tflint.zip tflint -d /usr/bin/
         rm tflint.zip 2> /dev/null
 
         if [[ "${{ inputs.install-hcledit }}" == "true" ]]; then
-          curl -sSLo ./hcledit.tar.gz https://github.com/minamijoyo/hcledit/releases/download/v${{ inputs.hcledit-version }}/hcledit_${{ inputs.hcledit-version }}_$(uname)_amd64.tar.gz
+          curl --retry 3 --retry-all-errors --retry-delay 3 -sSLo ./hcledit.tar.gz https://github.com/minamijoyo/hcledit/releases/download/v${{ inputs.hcledit-version }}/hcledit_${{ inputs.hcledit-version }}_$(uname)_amd64.tar.gz
           sudo tar -xzf hcledit.tar.gz -C /usr/bin/ hcledit
           rm hcledit.tar.gz 2> /dev/null
         fi
 
         if [[ "${{ inputs.install-tfsec }}" == "true" ]]; then
-          curl -sSLo ./tfsec.tar.gz https://github.com/aquasecurity/tfsec/releases/download/v${{ inputs.tfsec-version }}/tfsec_${{ inputs.tfsec-version }}_$(uname)_amd64.tar.gz
+          curl --retry 3 --retry-all-errors --retry-delay 3 -sSLo ./tfsec.tar.gz https://github.com/aquasecurity/tfsec/releases/download/v${{ inputs.tfsec-version }}/tfsec_${{ inputs.tfsec-version }}_$(uname)_amd64.tar.gz
           sudo tar -xzf tfsec.tar.gz -C /usr/bin/ tfsec tfsec-checkgen
           rm tfsec.tar.gz 2> /dev/null
         fi
