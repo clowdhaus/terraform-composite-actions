@@ -31,7 +31,7 @@ inputs:
   tfsec-version:
     description: Version of tfsec to install when `install-tfsec` is true
     required: false
-    default: 1.28.4
+    default: 1.28.5
 
 runs:
   using: composite
