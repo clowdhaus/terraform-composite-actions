@@ -56,6 +56,7 @@ runs:
         curl --retry 3 --retry-all-errors --retry-delay 3 -sSLo ./terraform-docs.tar.gz https://github.com/terraform-docs/terraform-docs/releases/download/${{ inputs.terraform-docs-version }}/terraform-docs-${{ inputs.terraform-docs-version }}-$(uname)-${{  inputs.terraform-architecture  }}.tar.gz
         sudo tar -xzf terraform-docs.tar.gz -C /usr/bin/ terraform-docs
         rm terraform-docs.tar.gz 2> /dev/null
+        rm -rf $(which tflint)
 
         if [[ "${{ inputs.tflint-version }}" == "latest" ]]; then
           curl --retry 3 --retry-all-errors --retry-delay 3 -sSL "$(curl --retry 3 --retry-all-errors --retry-delay 3 -s https://api.github.com/repos/terraform-linters/tflint/releases/latest | grep -o -E "https://.+?_linux_${{  inputs.terraform-architecture  }}.zip")" > tflint.zip
