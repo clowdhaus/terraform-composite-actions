@@ -68,6 +68,7 @@ The `clowdhaus/terraform-composite-actions/pre-commit` action will install the f
 #### Optional
 
 - [tfsec](https://aquasecurity.github.io/tfsec), when `install-tfsec=true` (default = `false`), using provided `tfsec-version` input (default = `1.28.0`)
+- [trivy](https://aquasecurity.github.io/trivy), when `install-trivy=true` (default = `false`), using provided `trivy-version` input (default = `0.65.0`)
 - [hcledit](https://github.com/minamijoyo/hcledit) when `install-hcledit=true` (default = `false`), using provided `hcledit-version` input (default = `0.2.3`)
 
 #### Example
