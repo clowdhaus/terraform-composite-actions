@@ -49,23 +49,42 @@ runs:
       shell: bash
       run: |
         os=$(uname -s | tr '[:upper:]' '[:lower:]')
+        case "$os" in
+            linux)
+                trivy_os="Linux"
+                ;;
+            darwin)
+                trivy_os="macOS"
+                ;;
+            windows)
+                trivy_os="Windows"
+                ;;
+        esac
+
         arch=$(uname -m)
         case $arch in
             "x86_64")
                 arch="amd64"
+                trivy_arch="64bit"
                 ;;
             "i386" | "i686")
                 arch="386"
+                trivy_arch="32bit"
                 ;;
             "aarch64")
                 arch="arm64"
+                trivy_arch="ARM64"
                 ;;
             "armv7l")
                 arch="arm"
+                trivy_arch="ARM"
                 ;;
         esac
+
         echo "OS=$os" >> $GITHUB_ENV
         echo "ARCH=$arch" >> $GITHUB_ENV
+        echo "TRIVY_OS=$trivy_os" >> $GITHUB_ENV
+        echo "TRIVY_ARCH=$trivy_arch" >> $GITHUB_ENV
 
     - name: Install Terraform v${{ inputs.terraform-version }}
       shell: bash
@@ -120,7 +139,7 @@ runs:
         rm tfsec.tar.gz 2> /dev/null
 
         if [[ "${{ inputs.install-trivy }}" == "true" ]]; then
-          curl --retry 3 --retry-all-errors --retry-delay 3 -sSLo ./trivy.tar.gz https://github.com/aquasecurity/trivy/releases/download/v${{ inputs.trivy-version }}/trivy_${{ inputs.trivy-version }}_${{ env.OS }}_${{ env.ARCH }}.tar.gz
+          curl --retry 3 --retry-all-errors --retry-delay 3 -sSLo ./trivy.tar.gz https://github.com/aquasecurity/trivy/releases/download/v${{ inputs.trivy-version }}/trivy_${{ inputs.trivy-version }}_${{ env.TRIVY_OS }}_${{ env.TRIVY_ARCH }}.tar.gz
           sudo tar -xzf trivy.tar.gz -C /usr/bin/ trivy
           rm trivy.tar.gz 2> /dev/null
         fi
