@@ -138,11 +138,13 @@ runs:
         sudo tar -xzf tfsec.tar.gz -C /usr/bin/ tfsec tfsec-checkgen
         rm tfsec.tar.gz 2> /dev/null
 
-        if [[ "${{ inputs.install-trivy }}" == "true" ]]; then
-          curl --retry 3 --retry-all-errors --retry-delay 3 -sSLo ./trivy.tar.gz https://github.com/aquasecurity/trivy/releases/download/v${{ inputs.trivy-version }}/trivy_${{ inputs.trivy-version }}_${{ env.TRIVY_OS }}-${{ env.TRIVY_ARCH }}.tar.gz
-          sudo tar -xzf trivy.tar.gz -C /usr/bin/ trivy
-          rm trivy.tar.gz 2> /dev/null
-        fi
+    - name: Install trivy
+      shell: bash
+      if: ${{ inputs.install-trivy == 'true' }}
+      run: |
+        curl --retry 3 --retry-all-errors --retry-delay 3 -sSLo ./trivy.tar.gz https://github.com/aquasecurity/trivy/releases/download/v${{ inputs.trivy-version }}/trivy_${{ inputs.trivy-version }}_${{ env.TRIVY_OS }}-${{ env.TRIVY_ARCH }}.tar.gz
+        sudo tar -xzf trivy.tar.gz -C /usr/bin/ trivy
+        rm trivy.tar.gz 2> /dev/null
 
     - name: Execute pre-commit
       shell: bash
