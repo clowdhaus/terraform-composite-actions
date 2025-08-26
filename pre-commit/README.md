@@ -15,6 +15,7 @@ The `clowdhaus/terraform-composite-actions/pre-commit` action will install the f
 - [terraform-docs](https://github.com/terraform-docs/terraform-docs) using provided `terraform-docs-version` input
 - [hcledit](https://github.com/minamijoyo/hcledit) when `install-hcledit` is `true` (and `hcledit-version` to support)
 - [tfsec](https://github.com/aquasecurity/tfsec)
+- [trivy](https://github.com/aquasecurity/trivy)
 
 ```yml
 jobs:

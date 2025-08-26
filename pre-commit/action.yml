@@ -32,6 +32,14 @@ inputs:
     description: Version of tfsec to install when `install-tfsec` is true
     required: false
     default: 1.28.14
+  install-trivy:
+    description: Install trivy for pre-commit
+    required: false
+    default: 'false'
+  trivy-version:
+    description: Version of trivy to install when `install-trivy` is true
+    required: false
+    default: 0.65.0
 
 runs:
   using: composite
@@ -41,23 +49,42 @@ runs:
       shell: bash
       run: |
         os=$(uname -s | tr '[:upper:]' '[:lower:]')
+        case "$os" in
+            linux)
+                trivy_os="Linux"
+                ;;
+            darwin)
+                trivy_os="macOS"
+                ;;
+            windows)
+                trivy_os="Windows"
+                ;;
+        esac
+
         arch=$(uname -m)
         case $arch in
             "x86_64")
                 arch="amd64"
+                trivy_arch="64bit"
                 ;;
             "i386" | "i686")
                 arch="386"
+                trivy_arch="32bit"
                 ;;
             "aarch64")
                 arch="arm64"
+                trivy_arch="ARM64"
                 ;;
             "armv7l")
                 arch="arm"
+                trivy_arch="ARM"
                 ;;
         esac
+
         echo "OS=$os" >> $GITHUB_ENV
         echo "ARCH=$arch" >> $GITHUB_ENV
+        echo "TRIVY_OS=$trivy_os" >> $GITHUB_ENV
+        echo "TRIVY_ARCH=$trivy_arch" >> $GITHUB_ENV
 
     - name: Install Terraform v${{ inputs.terraform-version }}
       shell: bash
@@ -110,6 +137,14 @@ runs:
         curl --retry 3 --retry-all-errors --retry-delay 3 -sSLo ./tfsec.tar.gz https://github.com/aquasecurity/tfsec/releases/download/v${{ inputs.tfsec-version }}/tfsec_${{ inputs.tfsec-version }}_${{ env.OS }}_${{ env.ARCH }}.tar.gz
         sudo tar -xzf tfsec.tar.gz -C /usr/bin/ tfsec tfsec-checkgen
         rm tfsec.tar.gz 2> /dev/null
+
+    - name: Install trivy
+      shell: bash
+      if: ${{ inputs.install-trivy == 'true' }}
+      run: |
+        curl --retry 3 --retry-all-errors --retry-delay 3 -sSLo ./trivy.tar.gz https://github.com/aquasecurity/trivy/releases/download/v${{ inputs.trivy-version }}/trivy_${{ inputs.trivy-version }}_${{ env.TRIVY_OS }}-${{ env.TRIVY_ARCH }}.tar.gz
+        sudo tar -xzf trivy.tar.gz -C /usr/bin/ trivy
+        rm trivy.tar.gz 2> /dev/null
 
     - name: Execute pre-commit
       shell: bash
