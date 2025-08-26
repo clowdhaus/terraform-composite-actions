@@ -92,7 +92,6 @@ jobs:
           terraform-docs-version: ${{ env.TERRAFORM_DOCS_VERSION }}
           tflint-version: ${{ env.TFLINT_VERSION }}
           install-hcledit: true
-          hcledit-version: ${{ env.HCLEDIT_VERSION }}
 
       - name: check
         run: hcledit --help

@@ -7,7 +7,7 @@ inputs:
   terraform-docs-version:
     description: Version of terraform-docs to use when evaluating checks
     required: false
-    default: v0.16.0
+    default: v0.20.0
   tflint-version:
     description: Version of tflint to use when evaluating checks
     required: false
@@ -23,7 +23,7 @@ inputs:
   hcledit-version:
     description: Version of hcledit to install when `install-hcledit` is true
     required: false
-    default: 0.2.10
+    default: 0.2.17
   install-tfsec:
     description: Install tfsec for pre-commit
     required: false
@@ -31,7 +31,7 @@ inputs:
   tfsec-version:
     description: Version of tfsec to install when `install-tfsec` is true
     required: false
-    default: 1.28.5
+    default: 1.28.14
 
 runs:
   using: composite
@@ -67,21 +67,24 @@ runs:
         sudo unzip -qq terraform_${{ inputs.terraform-version }}_${{ env.OS }}_${{ env.ARCH }}.zip terraform -d /usr/bin/
         rm terraform_${{ inputs.terraform-version }}_${{ env.OS }}_${{ env.ARCH }}.zip 2> /dev/null
 
-    - name: Setup python venv
+    - name: Install pre-commit
       shell: bash
       run: |
         mkdir -p ~/.venv
         python3 -m venv ~/.venv
-
-    - name: Install pre-commit dependencies
-      shell: bash
-      run: |
         source ~/.venv/bin/activate
         pip install -q pre-commit
 
+    - name: Install terraform-docs
+      shell: bash
+      run: |
         curl --retry 3 --retry-all-errors --retry-delay 3 -sSLo ./terraform-docs.tar.gz https://github.com/terraform-docs/terraform-docs/releases/download/${{ inputs.terraform-docs-version }}/terraform-docs-${{ inputs.terraform-docs-version }}-${{ env.OS }}-${{ env.ARCH }}.tar.gz
         sudo tar -xzf terraform-docs.tar.gz -C /usr/bin/ terraform-docs
         rm terraform-docs.tar.gz 2> /dev/null
+
+    - name: Install tflint
+      shell: bash
+      run: |
         rm -rf $(which tflint)
 
         if [[ "${{ inputs.tflint-version }}" == "latest" ]]; then
@@ -92,17 +95,21 @@ runs:
         sudo unzip -qq tflint.zip tflint -d /usr/bin/
         rm tflint.zip 2> /dev/null
 
-        if [[ "${{ inputs.install-hcledit }}" == "true" ]]; then
-          curl --retry 3 --retry-all-errors --retry-delay 3 -sSLo ./hcledit.tar.gz https://github.com/minamijoyo/hcledit/releases/download/v${{ inputs.hcledit-version }}/hcledit_${{ inputs.hcledit-version }}_${{ env.OS }}_${{ env.ARCH }}.tar.gz
-          sudo tar -xzf hcledit.tar.gz -C /usr/bin/ hcledit
-          rm hcledit.tar.gz 2> /dev/null
-        fi
+    - name: Install hcledit
+      shell: bash
+      if: ${{ inputs.install-hcledit == 'true' }}
+      run: |
+        curl --retry 3 --retry-all-errors --retry-delay 3 -sSLo ./hcledit.tar.gz https://github.com/minamijoyo/hcledit/releases/download/v${{ inputs.hcledit-version }}/hcledit_${{ inputs.hcledit-version }}_${{ env.OS }}_${{ env.ARCH }}.tar.gz
+        sudo tar -xzf hcledit.tar.gz -C /usr/bin/ hcledit
+        rm hcledit.tar.gz 2> /dev/null
 
-        if [[ "${{ inputs.install-tfsec }}" == "true" ]]; then
-          curl --retry 3 --retry-all-errors --retry-delay 3 -sSLo ./tfsec.tar.gz https://github.com/aquasecurity/tfsec/releases/download/v${{ inputs.tfsec-version }}/tfsec_${{ inputs.tfsec-version }}_${{ env.OS }}_${{ env.ARCH }}.tar.gz
-          sudo tar -xzf tfsec.tar.gz -C /usr/bin/ tfsec tfsec-checkgen
-          rm tfsec.tar.gz 2> /dev/null
-        fi
+    - name: Install tfsec
+      shell: bash
+      if: ${{ inputs.install-tfsec == 'true' }}
+      run: |
+        curl --retry 3 --retry-all-errors --retry-delay 3 -sSLo ./tfsec.tar.gz https://github.com/aquasecurity/tfsec/releases/download/v${{ inputs.tfsec-version }}/tfsec_${{ inputs.tfsec-version }}_${{ env.OS }}_${{ env.ARCH }}.tar.gz
+        sudo tar -xzf tfsec.tar.gz -C /usr/bin/ tfsec tfsec-checkgen
+        rm tfsec.tar.gz 2> /dev/null
 
     - name: Execute pre-commit
       shell: bash
@@ -113,4 +120,4 @@ runs:
     - name: Cleanup venv
       shell: bash
       run: |
-        rm -rf .venv # tidy up
+        rm -rf .venv
