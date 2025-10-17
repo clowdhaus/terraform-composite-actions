@@ -40,6 +40,10 @@ inputs:
     description: Version of trivy to install when `install-trivy` is true
     required: false
     default: 0.65.0
+  parallelize-init:
+    description: Whether to parallelize 'terraform init' across directories
+    required: false
+    default: 'false'
 
 runs:
   using: composite
@@ -145,6 +149,14 @@ runs:
         curl --retry 3 --retry-all-errors --retry-delay 3 -sSLo ./trivy.tar.gz https://github.com/aquasecurity/trivy/releases/download/v${{ inputs.trivy-version }}/trivy_${{ inputs.trivy-version }}_${{ env.TRIVY_OS }}-${{ env.TRIVY_ARCH }}.tar.gz
         sudo tar -xzf trivy.tar.gz -C /usr/bin/ trivy
         rm trivy.tar.gz 2> /dev/null
+
+    - name: Initialize directories in parallel
+      shell: bash
+      if: ${{ inputs.parallelize-init == 'true' }}
+      run: |
+        DIRS=$(rg -l --null required_version | xargs -0 dirname | uniq)
+        echo "$DIRS"
+        echo "$DIRS" | xargs -n 1 -P 4 -I {} bash -c 'cd "{}" && terraform init -input=false -no-color || true'
 
     - name: Execute pre-commit
       shell: bash

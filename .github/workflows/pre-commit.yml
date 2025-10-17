@@ -7,8 +7,8 @@ on:
       - master
 
 env:
-  TERRAFORM_DOCS_VERSION: v0.19.0
-  TFLINT_VERSION: v0.53.0
+  TERRAFORM_DOCS_VERSION: v0.20.0
+  TFLINT_VERSION: v0.59.1
 
 jobs:
   collectInputs:
@@ -92,6 +92,7 @@ jobs:
           terraform-docs-version: ${{ env.TERRAFORM_DOCS_VERSION }}
           tflint-version: ${{ env.TFLINT_VERSION }}
           install-hcledit: true
+          parallelize-init: true
 
       - name: check
         run: hcledit --help
