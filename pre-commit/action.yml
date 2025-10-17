@@ -192,9 +192,9 @@ runs:
       shell: bash
       if: ${{ inputs.parallelize-init == 'true' }}
       run: |
-        curl --retry 3 --retry-all-errors --retry-delay 3 -sSO https://releases.hashicorp.com/terraform/${{ inputs.terraform-version }}/terraform_${{ inputs.terraform-version }}_${{ env.OS }}_${{ env.ARCH }}.zip
-        curl --retry 3 --retry-all-errors --retry-delay 3 -sSO https://github.com/BurntSushi/ripgrep/releases/download/15.0.0/ripgrep-15.0.0-${{ env.RG_TARGET }}.tar.gz
-        sudo tar -xzf ripgrep-15.0.0-${{ env.RG_TARGET }}.tar.gz -C /usr/bin/ ripgrep
+        curl --retry 3 --retry-all-errors --retry-delay 3 -sSLo ./ripgrep.tar.gz https://github.com/BurntSushi/ripgrep/releases/download/15.0.0/ripgrep-15.0.0-${{ env.RG_TARGET }}.tar.gz
+        tar -xzf ripgrep.tar.gz
+        sudo mv ripgrep-15.0.0-${{ env.RG_TARGET }}/rg /usr/bin/
         rm ripgrep-15.0.0-${{ env.RG_TARGET }}.tar.gz 2> /dev/null
 
         DIRS=$(rg -l --null required_version | xargs -0 dirname | uniq)
