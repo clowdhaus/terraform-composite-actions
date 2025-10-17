@@ -35,10 +35,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Default Terraform version
-        continue-on-error: true
-        run: terraform version
-
       - name: Terraform min/max versions
         id: minMax
         uses: clowdhaus/terraform-min-max@v2.1.0
@@ -76,10 +72,6 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{github.event.pull_request.head.repo.full_name}}
-
-      - name: Default Terraform version
-        continue-on-error: true
-        run: terraform version
 
       - name: Terraform min/max versions
         id: minMax
