@@ -1,9 +1,16 @@
 name: pre-commit
 description: Execute pre-commit for Terraform codebase
 inputs:
+  tofu-version:
+    description: OpenTofu version supported for use in evaluation
+    required: true
   terraform-version:
     description: Terraform version supported for use in evaluation
-    required: true
+    required: false
+  install-terraform:
+    description: Install terraform for pre-commit
+    required: false
+    default: 'false'
   terraform-docs-version:
     description: Version of terraform-docs to use when evaluating checks
     required: false
@@ -130,11 +137,20 @@ runs:
 
     - name: Install Terraform v${{ inputs.terraform-version }}
       shell: bash
+      if: ${{ inputs.install-terraform == 'true' }}
       run: |
         rm -rf $(which terraform)
         curl --retry 3 --retry-all-errors --retry-delay 3 -sSO https://releases.hashicorp.com/terraform/${{ inputs.terraform-version }}/terraform_${{ inputs.terraform-version }}_${{ env.OS }}_${{ env.ARCH }}.zip
         sudo unzip -qq terraform_${{ inputs.terraform-version }}_${{ env.OS }}_${{ env.ARCH }}.zip terraform -d /usr/bin/
         rm terraform_${{ inputs.terraform-version }}_${{ env.OS }}_${{ env.ARCH }}.zip 2> /dev/null
+
+    - name: Install OpenTofu v${{ inputs.tofu-version }}
+      shell: bash
+      run: |
+        rm -rf $(which tofu)
+        curl --retry 3 --retry-all-errors --retry-delay 3 -sSO https://github.com/opentofu/opentofu/releases/download/v${{ inputs.tofu-version }}/tofu_${{ inputs.terraform-version }}_${{ env.OS }}_${{ env.ARCH }}.zip
+        sudo unzip -qq tofu_${{ inputs.tofu-version }}_${{ env.OS }}_${{ env.ARCH }}.zip tofu -d /usr/bin/
+        rm tofu_${{ inputs.tofu-version }}_${{ env.OS }}_${{ env.ARCH }}.zip 2> /dev/null
 
     - name: Install pre-commit
       shell: bash
