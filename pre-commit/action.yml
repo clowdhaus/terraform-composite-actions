@@ -2,8 +2,8 @@ name: pre-commit
 description: Execute pre-commit for Terraform codebase
 inputs:
   terraform-version:
-    description: Terraform version supported for use in evaluation
-    required: true
+    description: Terraform version supported for use in evaluation. Required when use-opentofu is false.
+    required: false
   terraform-docs-version:
     description: Version of terraform-docs to use when evaluating checks
     required: false
@@ -44,10 +44,26 @@ inputs:
     description: Whether to parallelize 'terraform init' across directories
     required: false
     default: 'false'
+  use-opentofu:
+    description: 'Use OpenTofu instead of Terraform. When true, installs OpenTofu and sets PCT_TFPATH to ensure pre-commit hooks use tofu.'
+    required: false
+    default: 'false'
+  opentofu-version:
+    description: 'The version of OpenTofu to install when use-opentofu is true'
+    required: false
+    default: '1.11.4'
 
 runs:
   using: composite
   steps:
+    - name: Validate version inputs
+      shell: bash
+      run: |
+        if [[ "${{ inputs.use-opentofu }}" != "true" && -z "${{ inputs.terraform-version }}" ]]; then
+          echo "::error::terraform-version is required when use-opentofu is false"
+          exit 1
+        fi
+
     - name: Determine OS and Architecture
       id: os_arch
       shell: bash
@@ -128,7 +144,21 @@ runs:
         echo "TRIVY_ARCH=$trivy_arch" >> $GITHUB_ENV
         echo "RG_TARGET=$rg_target" >> $GITHUB_ENV
 
+    - name: Install OpenTofu v${{ inputs.opentofu-version }}
+      if: inputs.use-opentofu == 'true'
+      shell: bash
+      run: |
+        curl --retry 3 --retry-all-errors --retry-delay 3 -sSLo ./tofu.zip "https://github.com/opentofu/opentofu/releases/download/v${{ inputs.opentofu-version }}/tofu_${{ inputs.opentofu-version }}_${{ env.OS }}_${{ env.ARCH }}.zip"
+        sudo unzip -qq tofu.zip tofu -d /usr/bin/
+        rm tofu.zip 2> /dev/null
+
+    - name: Set PCT_TFPATH for OpenTofu
+      if: inputs.use-opentofu == 'true'
+      shell: bash
+      run: echo "PCT_TFPATH=tofu" >> $GITHUB_ENV
+
     - name: Install Terraform v${{ inputs.terraform-version }}
+      if: inputs.use-opentofu != 'true'
       shell: bash
       run: |
         rm -rf $(which terraform)
@@ -188,6 +218,18 @@ runs:
         sudo tar -xzf trivy.tar.gz -C /usr/bin/ trivy
         rm trivy.tar.gz 2> /dev/null
 
+    - name: Pre-warm Trivy checks bundle cache
+      shell: bash
+      if: ${{ inputs.install-trivy == 'true' }}
+      run: |
+        # Download the misconfig checks bundle once before pre-commit runs.
+        # Prevents race condition when multiple parallel trivy instances
+        # all try to download the bundle simultaneously, which can corrupt
+        # the cache and cause FATAL errors.
+        mkdir -p /tmp/trivy-warmup
+        trivy config /tmp/trivy-warmup >/dev/null 2>&1 || true
+        rm -rf /tmp/trivy-warmup
+
     - name: Initialize directories in parallel
       shell: bash
       if: ${{ inputs.parallelize-init == 'true' }}
@@ -197,7 +239,8 @@ runs:
         mv ripgrep-15.0.0-${{ env.RG_TARGET }}/rg /usr/local/bin/
         rm -rf ripgrep* 2> /dev/null
         DIRS=$(rg -l -ttf --null required_version . | xargs -0 dirname | uniq)
-        echo "$DIRS" | xargs -n 1 -P 4 -I {} bash -c 'cd "{}" && terraform init -input=false -no-color || true'
+        INIT_CMD="${PCT_TFPATH:-terraform}"
+        echo "$DIRS" | xargs -n 1 -P 4 -I {} bash -c 'cd "{}" && '"$INIT_CMD"' init -input=false -no-color || true'
 
     - name: Execute pre-commit
       shell: bash
