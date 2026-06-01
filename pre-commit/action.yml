@@ -7,7 +7,7 @@ inputs:
   terraform-docs-version:
     description: Version of terraform-docs to use when evaluating checks
     required: false
-    default: v0.20.0
+    default: v0.24.0
   tflint-version:
     description: Version of tflint to use when evaluating checks
     required: false
@@ -23,7 +23,7 @@ inputs:
   hcledit-version:
     description: Version of hcledit to install when `install-hcledit` is true
     required: false
-    default: 0.2.17
+    default: 0.2.18
   install-tfsec:
     description: Install tfsec for pre-commit
     required: false
@@ -39,7 +39,7 @@ inputs:
   trivy-version:
     description: Version of trivy to install when `install-trivy` is true
     required: false
-    default: 0.65.0
+    default: 0.71.0
   parallelize-init:
     description: Whether to parallelize 'terraform init' across directories
     required: false
@@ -192,9 +192,9 @@ runs:
       shell: bash
       if: ${{ inputs.parallelize-init == 'true' }}
       run: |
-        curl --retry 3 --retry-all-errors --retry-delay 3 -sSLo ./ripgrep.tar.gz https://github.com/BurntSushi/ripgrep/releases/download/15.0.0/ripgrep-15.0.0-${{ env.RG_TARGET }}.tar.gz
+        curl --retry 3 --retry-all-errors --retry-delay 3 -sSLo ./ripgrep.tar.gz https://github.com/BurntSushi/ripgrep/releases/download/15.1.0/ripgrep-15.1.0-${{ env.RG_TARGET }}.tar.gz
         tar -xzf ripgrep.tar.gz
-        mv ripgrep-15.0.0-${{ env.RG_TARGET }}/rg /usr/local/bin/
+        mv ripgrep-15.1.0-${{ env.RG_TARGET }}/rg /usr/local/bin/
         rm -rf ripgrep* 2> /dev/null
         DIRS=$(rg -l -ttf --null required_version . | xargs -0 dirname | uniq)
         echo "$DIRS" | xargs -n 1 -P 4 -I {} bash -c 'cd "{}" && terraform init -input=false -no-color || true'
