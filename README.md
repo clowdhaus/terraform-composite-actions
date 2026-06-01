@@ -70,6 +70,7 @@ The `clowdhaus/terraform-composite-actions/pre-commit` action will install the f
 - [tfsec](https://aquasecurity.github.io/tfsec), when `install-tfsec=true` (default = `false`), using provided `tfsec-version` input (default = `1.28.14`)
 - [trivy](https://aquasecurity.github.io/trivy), when `install-trivy=true` (default = `false`), using provided `trivy-version` input (default = `0.65.0`)
 - [hcledit](https://github.com/minamijoyo/hcledit) when `install-hcledit=true` (default = `false`), using provided `hcledit-version` input (default = `0.2.17`)
+- parallelize-init: Whether to parallelize 'terraform init' across directories (default = `false`)
 
 #### Example
 
@@ -89,6 +90,7 @@ jobs:
           # Configure optional software
           install-hcledit: true
           hcledit-version: 0.2.3
+          parallelize-init: true
           args: "--all-files --color always --show-diff-on-failure"
 ```
 
